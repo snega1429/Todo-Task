@@ -1,6 +1,6 @@
 import  { useState } from "react";
 import API from "../api/api";
-import type { TodoCreate } from "../types";
+import type { TodoCreate } from "../Types";
 import '../App.css';
 
   
