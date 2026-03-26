@@ -1,65 +1,76 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import API from "../api/api";
-import '../App.css';
+import { useAuthStore } from "../store/authStore";
+import { useNavigate, Link } from "react-router-dom";
+import { AxiosError } from "axios";
 
-type LoginProps = {
-  onLoginSuccess: () => void;
-  onSwitchToSignup: () => void; 
-};
+interface LoginResponse {
+  token: string;
+}
 
-export default function Login({ onLoginSuccess, onSwitchToSignup} : LoginProps) {
-
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
 
     try {
+      const res = await API.post<LoginResponse>("/login", {
+        email,
+        password,
+      });
 
-      const res = await API.post("/login", {email,password});
+      login(res.data.token);
+      localStorage.setItem("token", res.data.token);
 
-      console.log(res.data);
+      navigate("/dashboard");
 
-      if(res.data.message === "Login successful") {
-        console.log("Login success, going to Todo");
-        onLoginSuccess();
-      }
-
-    } catch (error: any) {
-      if (error.response)
-        setMessage(error.response.data.detail || "Login failed");
-      else 
-        setMessage("Something went wrong");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ detail?: string }>;
+      setMessage(error.response?.data.detail || "Login failed");
     }
   };
-      
+
   return (
     <div>
-      <h2>Login</h2>
-
       <form onSubmit={handleLogin}>
+        <h2>Login</h2>
 
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <br />
+        <input
+          type="email"
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <br />
+        <br /><br />
+
+        <input
+          type="password"
+          value={password}
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <br /><br />
 
         <button type="submit">Login</button>
 
-      </form>
-      <p>
+        {message && <p>{message}</p>}
+
+        <p>
           Don't have an account?{" "}
-         <button type="button" onClick={onSwitchToSignup}>
-          Signup
-        </button>
-      </p>
+          <Link to="/signup">Signup</Link>
+        </p>
 
-      {message && <p>{message}</p>}
-
+      </form>
     </div>
   );
 }

@@ -1,72 +1,32 @@
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
+import Login from "../src/components/Login";
 import Signup from "./components/Signup";
-import Login from "./components/Login";
-import CreateTodo from "./components/CreateTodo";
-import TodoList from "./components/TodoList";
-import "./index.css";
+import Dashboard from "./components/Dashboard";
+import { PrivateRoute } from "./routes/PrivateRoutes";
+import { Navigate } from "react-router-dom";
 
 function App() {
-  const [step, setStep] = useState(() => {
-    
-    const token = localStorage.getItem("token");
-    return token ? "todo" : "login";
-  });
-  const [refresh, setRefresh] = useState(false);
-
-  const handleLoginSuccess = () => setStep("todo");
-  const handleSignupSuccess = () => setStep("todo");
-
-  const handleCreateTodoSuccess = () => {
-    setRefresh(prev => !prev); 
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token"); 
-    setStep("login");
-  };
-
   return (
-    <div className="container">
-      <div className="card">
-        <h1>
-          {step === "login"}
-          {step === "signup"}
-          {step === "todo" && "Todo App"}
-        </h1>
-
-        {step === "login" && (
-          <Login 
-            onLoginSuccess={handleLoginSuccess}
-            onSwitchToSignup={() => setStep("signup")}
+   
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
           />
-        )}
-
-        {step === "signup" && (
-          <Signup 
-            onSignupSuccess={handleSignupSuccess}
-            onSwitchToLogin={() => setStep("login")}
-          />
-        )}
-
-        {step === "todo" && (
-          <>
-
-            {/* Create Todo */}
-            <CreateTodo onCreateTodoSuccess={handleCreateTodoSuccess} />
-
-            {/*  Todo List */}
-            <TodoList refresh={refresh} />
-            {/* Logout button */}
-            <button 
-              onClick={handleLogout}
-              style={{ marginBottom: "10px" }}
-            >
-              Logout
-            </button>
-          </>
-        )}
-      </div>
-    </div>
+        </Routes>
+        
+      </Router>
+    </ThemeProvider>
   );
 }
 

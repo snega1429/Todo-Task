@@ -1,95 +1,64 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import API from "../api/api";
+import { useAuthStore } from "../store/authStore";
+import { useNavigate, Link } from "react-router-dom";
+import { AxiosError } from "axios";
 
-type SignupProps = {
-  onSignupSuccess: () => void;
-  onSwitchToLogin: () => void;
-};
+interface SignupResponse {
+  token: string; 
+}
 
-export default function Signup({
-  onSignupSuccess,
-  onSwitchToLogin,
-}: SignupProps) {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+export default function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSignup = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  
+  const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await API.post("/signup", {
-        email: email,
-        password: password,
-      });
+      const res = await API.post<SignupResponse>("/signup", { email, password });
 
-      console.log(res.data);
+      localStorage.setItem("token", res.data.token);
 
-      
-      if (res.data.message === "Signup successful") {
-        setMessage(res.data.message);
-        console.log("Signup success => going to Todo page");
-        onSignupSuccess();
-      } else {
-        // User already exists or other message
-        setMessage(res.data.message);
-      }
-    } catch (error: any) {
-      console.error(error);
+      login(res.data.token);
+      navigate("/dashboard");
 
-      if (error.response) {
-        setMessage(
-          error.response.data.detail || "Signup failed"
-        );
-      } else {
-        setMessage("Server not responding");
-      }
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ detail?: string }>;
+      setMessage(error.response?.data.detail || "Signup failed");
     }
   };
 
   return (
-    <div>
-      <h2>Signup</h2>
+    <form onSubmit={handleSignup}>
+      <input
+        type="email"
+        value={email}
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        placeholder="Password"
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <button type="submit">Signup</button>
+      {message && <p>{message}</p>}
 
-      <form onSubmit={handleSignup}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <br />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <br />
-
-        <button type="submit">
-          Signup
-        </button>
-      </form>
+      {/* NEW LINK ADDED */}
 
       <p>
         Already have an account?{" "}
-        <button
-          type="button"
-          onClick={onSwitchToLogin}
-        >
-          Login
-        </button>
+        <Link to="/login">Login</Link>
       </p>
-
-      {message && <p>{message}</p>}
-    </div>
+    </form>
   );
 }
