@@ -11,6 +11,7 @@ from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate
 import models
 from fastapi import Request
+from datetime import date
 
 app=FastAPI()
 
@@ -48,12 +49,12 @@ class TodoSchema(BaseModel):
     id: int
     title: str
     category: str
-    due_date: str
+    due_date: date
     owner_id: int
     completed: bool
     
     class Config:
-        from_attribute = True
+        from_attributes = True
     
 SECRET_KEY = "a_super_secure_long_secret_key_1234567890"
         
