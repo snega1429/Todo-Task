@@ -5,15 +5,13 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+APP_URL = os.getenv("APP_URL")
 
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set!")
+if not APP_URL:
+    raise ValueError("APP_URL is not set!")
 
-engine = create_engine(DATABASE_URL)
-
+engine = create_engine(APP_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 def get_db():

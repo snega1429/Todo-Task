@@ -11,7 +11,7 @@ from models import Base
 from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate
 import models
-
+from fastapi import Request
 
 app=FastAPI()
 
@@ -20,14 +20,14 @@ models.Base.metadata.create_all(bind=engine)
 
 origins = [
     "http://localhost:5175",
-    "http://127.0.0.0.1:5173",
+   
     "https://eloquent-sfogliatella-a17f10.netlify.app"
     ]
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -122,13 +122,13 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
 
     return {"message": "Todo deleted successfully"}
 
-@app.put("/todos/{todo_id}")
+@app.put("/todos/{todo_id}", response_model=TodoSchema)
 def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(get_db)):
     todo = db.query(Todo).filter(Todo.id == todo_id).first()
 
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
-
+    
     todo.title = updated_todo.title
     todo.category = updated_todo.category
     todo.due_date = updated_todo.due_date
@@ -139,3 +139,4 @@ def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(ge
     db.refresh(todo)
 
     return {"message": "Todo updated successfully", "todo": todo}
+
