@@ -99,11 +99,11 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
 
     new_todo = Todo(
-    title=todo.title,
-    category=todo.category,
-    due_date=todo.due_date,
-    owner_id=1,
-    completed=False
+        title=todo.title,
+        category=todo.category,
+        due_date=todo.due_date,
+        owner_id=1,
+        completed=False
 )
         
     db.add(new_todo)
