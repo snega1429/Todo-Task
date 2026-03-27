@@ -5,7 +5,7 @@ class TodoCreate(BaseModel):
     id: int
     title: str
     category: str
-    due_date: date
+    due_date: str
     owner_id: int
     completed: bool
     

@@ -14,16 +14,26 @@ export default function CreateTodo({ onCreateTodoSuccess }: CreateTodoProps) {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newTodo: TodoCreate = { title, category, due_date: dueDate, owner_id: 1 };
+    const newTodo = { title, category, due_date: dueDate};
     try {
       await API.post("/todos", newTodo);
       setMessage("Todo created successfully");
       onCreateTodoSuccess();
-      setTitle(""); setCategory(""); setDueDate("");
+      setTitle(""); 
+      setCategory(""); 
+      setDueDate("");
     } catch (error: any) {
-      setMessage(error.response?.data.detail || "Error creating todo");
-    }
-  };
+        const err = error.response?.data?.detail;
+
+        if (Array.isArray(err)) {
+          setMessage(err[0].msg);
+        } else if (typeof err === "string") {
+          setMessage(err);
+        } else {
+          setMessage("Error creating todo");
+        }
+      }
+};
 
   return (
     <div>

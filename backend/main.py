@@ -49,7 +49,7 @@ class TodoSchema(BaseModel):
     id: int
     title: str
     category: str
-    due_date: date
+    due_date: str
     owner_id: int
     completed: bool
     
@@ -139,11 +139,10 @@ def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(ge
     todo.title = updated_todo.title
     todo.category = updated_todo.category
     todo.due_date = updated_todo.due_date
-    todo.owner_id = updated_todo.owner_id
     todo.completed = updated_todo.completed
     
     db.commit()
     db.refresh(todo)
 
-    return {"message": "Todo updated successfully", "todo": todo}
+    return todo
 
