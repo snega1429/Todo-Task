@@ -4,7 +4,7 @@ from datetime import date
 class TodoCreate(BaseModel):
     title: str
     category: str
-    due_date: date
+    due_date: int
     owner_id: int
     completed: bool
     
