@@ -20,7 +20,6 @@ models.Base.metadata.create_all(bind=engine)
 
 origins = [
     "http://localhost:5175",
-   
     "https://eloquent-sfogliatella-a17f10.netlify.app"
     ]
 
@@ -131,7 +130,7 @@ def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(ge
     
     todo.title = updated_todo.title
     todo.category = updated_todo.category
-    todo.due_date = updated_todo.due_date
+    todo.due_date = str(todo.due_date)
     todo.owner_id = updated_todo.owner_id
     todo.completed_bool = updated_todo.completed_bool
     
