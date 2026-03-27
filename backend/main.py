@@ -18,7 +18,7 @@ models.Base.metadata.create_all(bind=engine)
 
 
 origins = [
-    "http://localhost:5175",
+    "http://localhost:5173",
     "https://todo-task-fs.netlify.app"
     ]
 
@@ -95,9 +95,15 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     
 
 @app.post("/todos")
-def create_todo(todo: TodoSchema, db: Session = Depends(get_db)):
+def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
 
-    new_todo = Todo(**todo.dict())
+    new_todo = Todo(
+    title=todo.title,
+    category=todo.category,
+    due_date=todo.due_date,
+    owner_id=1,
+    completed=False
+)
         
     db.add(new_todo)
     db.commit()
@@ -131,7 +137,7 @@ def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(ge
     
     todo.title = updated_todo.title
     todo.category = updated_todo.category
-    todo.due_date = update_todo.due_date
+    todo.due_date = updated_todo.due_date
     todo.owner_id = updated_todo.owner_id
     todo.completed = updated_todo.completed
     
