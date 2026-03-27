@@ -6,7 +6,6 @@ from database import SessionLocal, engine
 from models import Todo, User
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from database import get_db
 from models import Base
 from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate
@@ -26,7 +25,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,7 +52,7 @@ class TodoSchema(BaseModel):
     owner_id: int
     completed: bool
     
-    class config:
+    class Config:
         orm_mode = True
     
 SECRET_KEY = "a_super_secure_long_secret_key_1234567890"
@@ -68,7 +67,7 @@ def home():
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
-        return HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
     new_user =User(email=user.email, password=user.password)
         
     db.add(new_user)
@@ -84,7 +83,9 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
   
 
     db_user = db.query(User).filter(
-        User.email == user.email, User.password == user.password
+        User.email == user.email
+    ).filter(
+        User.password == user.password
     ).first()
 
     if not db_user:
@@ -130,9 +131,9 @@ def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(ge
     
     todo.title = updated_todo.title
     todo.category = updated_todo.category
-    todo.due_date = str(todo.due_date)
+    todo.due_date = update_todo.due_date
     todo.owner_id = updated_todo.owner_id
-    todo.completed_bool = updated_todo.completed_bool
+    todo.completed = updated_todo.completed
     
     db.commit()
     db.refresh(todo)
