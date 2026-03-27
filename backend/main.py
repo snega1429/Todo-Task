@@ -53,7 +53,7 @@ class TodoSchema(BaseModel):
     completed: bool
     
     class Config:
-        orm_mode = True
+        from_attribute = True
     
 SECRET_KEY = "a_super_secure_long_secret_key_1234567890"
         
