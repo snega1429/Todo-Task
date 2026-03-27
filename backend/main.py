@@ -20,7 +20,7 @@ models.Base.metadata.create_all(bind=engine)
 
 origins = [
     "http://localhost:5175",
-    "https://eloquent-sfogliatella-a17f10.netlify.app"
+    "https://todo-task-fs.netlify.app"
     ]
 
 
