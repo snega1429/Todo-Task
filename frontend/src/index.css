@@ -118,17 +118,17 @@ input:focus {
 
 /* ===== Todo List ===== */
 .todo-list {
-  background-color: #25231d;
+  background-color: #be1285;
   padding: 1.5rem;
   border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(172, 233, 31, 0.925);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 /* Hover effect on Todo List */
 .todo-list:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(231, 24, 121, 0.2);
 }
 
 /* Premium diamond bullets */
