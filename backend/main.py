@@ -1,28 +1,33 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import List
-from database import SessionLocal, engine
-from models import Todo, User
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
-from models import Base
+from jose import jwt, JWTError
+from datetime import datetime, timedelta
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import hashlib
+
+from database import SessionLocal, engine
+from models import Base, User, Todo
 from schemas.UserSchema import UserCreate
-from schemas.TodoSchema import TodoCreate
-import models
-from fastapi import Request
-from datetime import date
+from schemas.TodoSchema import TodoCreate, TodoOut
 
-app=FastAPI()
+app = FastAPI()
 
-models.Base.metadata.create_all(bind=engine) 
+Base.metadata.create_all(bind=engine)
+security = HTTPBearer()
+# =========================
+# CONFIG
+# =========================
 
+SECRET_KEY = "mysecretkey"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 origins = [
     "http://localhost:5173",
     "https://todo-task-fs.netlify.app"
-    ]
-
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,117 +37,258 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# =========================
+# DATABASE
+# =========================
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-        
-class userCreate(BaseModel):
-    email: str
-    password: str
 
-        
+# =========================
+# PASSWORD HASH
+# =========================
 
-class TodoSchema(BaseModel):
-    id: int
-    title: str
-    category: str
-    due_date: str
-    owner_id: int
-    completed: bool
-    
-    class Config:
-        from_attributes = True
-    
-SECRET_KEY = "a_super_secure_long_secret_key_1234567890"
-        
+def hash_password(password: str):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password: str, hashed: str):
+    return hash_password(password) == hashed
+
+# =========================
+# CREATE TOKEN
+# =========================
+
+def create_token(user_id: int):
+
+    expire = datetime.utcnow() + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+
+    payload = {
+        "user_id": user_id,
+        "exp": expire
+    }
+
+    token = jwt.encode(
+        payload,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    return token
+
+# =========================
+# GET CURRENT USER (FIXED)
+# =========================
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    token = credentials.credentials
+
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Invalid authentication"
+    )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        user_id = payload.get("user_id")
+
+        if user_id is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(
+        User.id == user_id
+    ).first()
+
+    if user is None:
+        raise credentials_exception
+
+    return user
+# =========================
+# HOME
+# =========================
+
 @app.get("/")
 def home():
     return {"message": "API running"}
 
+# =========================
+# SIGNUP
+# =========================
 
-        
 @app.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    new_user =User(email=user.email, password=user.password)
-        
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered"
+        )
+
+    hashed = hash_password(user.password)
+
+    new_user = User(
+        email=user.email,
+        password=hashed
+    )
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    token = jwt.encode({"user_id": new_user.id}, SECRET_KEY, algorithm="HS256")
-    return {"token": token}
 
-    
+    token = create_token(new_user.id)
+
+    return {
+        "message": "Signup successful",
+        "token": token
+    }
+
+# =========================
+# LOGIN
+# =========================
 
 @app.post("/login")
 def login(user: UserCreate, db: Session = Depends(get_db)):
-  
 
     db_user = db.query(User).filter(
         User.email == user.email
-    ).filter(
-        User.password == user.password
     ).first()
 
     if not db_user:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
-    token = jwt.encode({"user_id": db_user.id}, SECRET_KEY, algorithm="HS256")
-    return {"token": token}
-    
+        raise HTTPException(
+            status_code=400,
+            detail="User not found"
+        )
 
-@app.post("/todos")
-def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
+    if not verify_password(
+        user.password,
+        db_user.password
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid password"
+        )
+
+    token = create_token(db_user.id)
+
+    return {
+        "message": "Login successful",
+        "token": token
+    }
+
+# =========================
+# CREATE TODO
+# =========================
+
+@app.post("/todos", response_model=TodoOut)
+def create_todo(
+    todo: TodoCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
 
     new_todo = Todo(
         title=todo.title,
         category=todo.category,
         due_date=todo.due_date,
-        owner_id=1,
+        owner_id=current_user.id,
         completed=False
-)
-        
+    )
+
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
 
     return new_todo
 
-@app.get("/todos", response_model=List[TodoSchema])
-def get_todos(db: Session = Depends(get_db)):
-    todos = db.query(Todo).all()
-    return todos
+# =========================
+# GET TODOS
+# =========================
+
+@app.get("/todos", response_model=List[TodoOut])
+def get_todos(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    return db.query(Todo).filter(
+        Todo.owner_id == current_user.id
+    ).all()
+
+# =========================
+# DELETE TODO
+# =========================
 
 @app.delete("/todos/{todo_id}")
-def delete_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = db.query(Todo).get(todo_id)
+def delete_todo(
+    todo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    todo = db.query(Todo).filter(
+        Todo.id == todo_id,
+        Todo.owner_id == current_user.id
+    ).first()
 
     if not todo:
-        raise HTTPException(status_code=404, detail="Todo not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Todo not found"
+        )
 
     db.delete(todo)
     db.commit()
 
-    return {"message": "Todo deleted successfully"}
+    return {"message": "Deleted"}
 
-@app.put("/todos/{todo_id}", response_model=TodoSchema)
-def update_todo(todo_id: int, updated_todo: TodoSchema, db: Session = Depends(get_db)):
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+# =========================
+# UPDATE TODO
+# =========================
+
+@app.put("/todos/{todo_id}", response_model=TodoOut)
+def update_todo(
+    todo_id: int,
+    updated: TodoCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    todo = db.query(Todo).filter(
+        Todo.id == todo_id,
+        Todo.owner_id == current_user.id
+    ).first()
 
     if not todo:
-        raise HTTPException(status_code=404, detail="Todo not found")
-    
-    todo.title = updated_todo.title
-    todo.category = updated_todo.category
-    todo.due_date = updated_todo.due_date
-    todo.completed = updated_todo.completed
-    
+        raise HTTPException(
+            status_code=404,
+            detail="Todo not found"
+        )
+
+    todo.title = updated.title
+    todo.category = updated.category
+    todo.due_date = updated.due_date
+
     db.commit()
     db.refresh(todo)
 
     return todo
-

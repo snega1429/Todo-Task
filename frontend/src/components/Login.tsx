@@ -17,29 +17,39 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // ✅ must be first
 
     try {
-      const res = await API.post<LoginResponse>("/login", {
-        email,
-        password,
-      });
+      const res = await API.post<LoginResponse>(
+        "/login",
+        {
+          email,
+          password,
+        }
+      );
 
+      // ✅ Save token
       login(res.data.token);
       localStorage.setItem("token", res.data.token);
 
+      console.log("Token saved:", res.data.token);
+
+      // ✅ Redirect
       navigate("/dashboard");
 
-    } catch (err: unknown) {
+    } catch (err: any) {
       const error = err as AxiosError<{ detail?: string }>;
-      setMessage(error.response?.data.detail || "Login failed");
+      setMessage(
+        error.response?.data.detail || "Login failed"
+      );
     }
   };
 
   return (
     <div>
+      <h2>Login</h2>
+
       <form onSubmit={handleLogin}>
-        <h2>Login</h2>
 
         <input
           type="email"
@@ -61,13 +71,17 @@ export default function Login() {
 
         <br /><br />
 
-        <button type="submit">Login</button>
+        <button type="submit">
+          Login
+        </button>
 
         {message && <p>{message}</p>}
 
         <p>
           Don't have an account?{" "}
-          <Link to="/signup">Signup</Link>
+          <Link to="/signup">
+            Signup
+          </Link>
         </p>
 
       </form>

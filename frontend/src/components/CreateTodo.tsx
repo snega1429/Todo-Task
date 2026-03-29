@@ -1,20 +1,16 @@
 import { useState } from "react";
-import API from "../api/api";
-import type { TodoCreate } from "../types/Types";
+import API from "../api/api"
 
-type CreateTodoProps = { 
-  onCreateTodoSuccess: () => void 
-};
 
-export default function CreateTodo({ onCreateTodoSuccess }: CreateTodoProps) {
+export default function CreateTodo({ onCreateTodoSuccess }: any) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = async (e: any) => {
     e.preventDefault();
-    const newTodo = { title, category, due_date: dueDate};
+    const newTodo = { title:title , category:category, due_date: dueDate};
     try {
       await API.post("/todos", newTodo);
       setMessage("Todo created successfully");
@@ -23,12 +19,13 @@ export default function CreateTodo({ onCreateTodoSuccess }: CreateTodoProps) {
       setCategory(""); 
       setDueDate("");
     } catch (error: any) {
-        const err = error.response?.data?.detail;
+      setMessage("Error creating todos");
+        console.log(error);
 
-        if (Array.isArray(err)) {
-          setMessage(err[0].msg);
-        } else if (typeof err === "string") {
-          setMessage(err);
+        if (Array.isArray(error)) {
+          setMessage(error[0].msg);
+        } else if (typeof error === "string") {
+          setMessage(error);
         } else {
           setMessage("Error creating todo");
         }
@@ -36,15 +33,43 @@ export default function CreateTodo({ onCreateTodoSuccess }: CreateTodoProps) {
 };
 
   return (
-    <div>
-      <h2>Create Todo</h2>
+    <div className="todo-list" >
+      <h3>Create Todo</h3>
+
       <form onSubmit={handleCreate}>
-        <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        <input type="text" placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} required />
-        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
-        <button type="submit">Create Todo</button>
+        
+      <input 
+          id="title"
+          name="title"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          />
+
+      <input 
+          id="category"
+          name="category"
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          />
+
+      <input 
+          id="due_date"
+          name="due_date"
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          />
+
+      <button type ="submit">Add Todo</button>
       </form>
+
       {message && <p>{message}</p>}
-    </div>
+      </div>
   );
 }
+
+
+
+      

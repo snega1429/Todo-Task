@@ -2,13 +2,20 @@ from pydantic import BaseModel
 from datetime import date
 
 class TodoCreate(BaseModel):
+  
+    title: str
+    category: str
+    due_date: date
+
+class TodoOut(BaseModel):
     id: int
     title: str
     category: str
-    due_date: str
+    due_date: date
     owner_id: int
-    completed: bool
+    completed:bool
     
-    class config:
-        orm_mode = True
+    class Config:
+        from_attributes = True
+    
     

@@ -5,28 +5,42 @@ import CreateTodo from "./CreateTodo";
 import TodoList from "./TodoList";
 
 export default function Dashboard() {
+
   const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/login";
+  };
+
   const themeCtx = useContext(ThemeContext);
   if (!themeCtx) return null;
+
   const { theme, toggleTheme } = themeCtx;
 
   const [refresh, setRefresh] = useState(false);
 
-  
-  const onCreateTodoSuccess = () => {
-    setRefresh(!refresh); 
+  const reload = () => {
+    setRefresh(!refresh);
   };
 
   return (
     <div>
       <h1>Dashboard Page</h1>
-      <p>Current theme: {theme}</p>
-      <button onClick={toggleTheme}>Toggle Theme</button>
-      <button onClick={logout}>Logout</button>
 
-      {/* Pass function as a prop correctly */}
-      <CreateTodo onCreateTodoSuccess={onCreateTodoSuccess} />
+      <p>Current theme: {theme}</p>
+
+      <button onClick={toggleTheme}>
+        Toggle Theme
+      </button>
+
+      <button onClick={handleLogout}>
+        Logout
+      </button>
+
+      <CreateTodo onCreateTodoSuccess={reload} />
       <TodoList refresh={refresh} />
+
     </div>
   );
 }

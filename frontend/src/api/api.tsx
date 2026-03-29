@@ -1,24 +1,19 @@
-import  axios from "axios";
-
+import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://todo-task-4eka.onrender.com"
-            
+  baseURL: "http://127.0.0.1:8000"
 });
 
-API.interceptors.request.use(
-  (config) => {
-  const token = localStorage.getItem("token");
+API.interceptors.request.use((config) => {
 
-  if (token) { 
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+  const token = localStorage.getItem("token");
+  
+  if (token) {
+    config.headers.Authorization =
+      `Bearer ${token}`;
   }
+
   return config;
-},
-(error) => {
-  return Promise.reject(error);
-}
-);
+});
 
 export default API;
