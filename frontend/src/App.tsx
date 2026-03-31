@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import { PrivateRoute } from "./routes/PrivateRoutes";
 import { Navigate } from "react-router-dom";
 import ChangePassword from "../src/components/ChangePassword";
+import Profile from "../src/components/Profile";
 import "./index.css";
 
 function App() {
@@ -49,6 +50,15 @@ function App() {
             element={
               <PrivateRoute>
                   <ChangePassword />
+              </PrivateRoute>
+            }
+          />
+          {/* ADD THIS */}
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                  <Profile />
               </PrivateRoute>
             }
           />

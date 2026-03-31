@@ -14,6 +14,7 @@ from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate, TodoOut
 from fastapi.responses import JSONResponse
 from schemas.UserSchema import UserCreate, ChangePassword
+from schemas.UserSchema import UserCreate, UserProfileUpdate
 
 app = FastAPI()
 
@@ -25,7 +26,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -338,3 +339,47 @@ def change_password(
             status_code=500,
             detail=str(e)   # IMPORTANT — real error show pannum
         )
+        
+@app.get("/profile")
+def get_profile(current_user: User = Depends(get_current_user)):
+    return {"email": current_user.email}
+        
+@app.put("/profile")
+def update_profile(
+    data:UserCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Check if email already used by another user
+        existing_user = db.query(User).filter(
+            User.email == data.email,
+            User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already in use"
+            )
+
+        # Update current user's email
+        current_user.email = data.email
+        db.commit()
+        db.refresh(current_user)
+
+        return {"message": "Profile updated successfully"}
+
+    except Exception as e:
+        print("ERROR OCCURRED:", e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+        
+
+@app.get("/me")
+def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email
+    }
