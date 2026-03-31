@@ -9,7 +9,7 @@ const PORT = 8000;
 // Enable CORS for frontend running on port 5174
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );

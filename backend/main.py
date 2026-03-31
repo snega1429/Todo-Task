@@ -13,6 +13,7 @@ from models import Base, User, Todo
 from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate, TodoOut
 from fastapi.responses import JSONResponse
+from schemas.UserSchema import UserCreate, ChangePassword
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -290,3 +291,50 @@ def update_todo(
     db.refresh(todo)
 
     return todo
+
+# =========================
+# CHANGE PASSWORD
+# =========================
+
+@app.put("/change-password")
+def change_password(
+    data: ChangePassword,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    try:
+        
+        if not verify_password(
+            data.old_password,
+            current_user.password
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="Old password incorrect"
+            )
+
+        # New password hash
+        new_hashed = hash_password(
+            data.new_password
+        )
+
+        current_user.password = new_hashed
+
+        db.commit()
+        db.refresh(current_user)
+
+        print("Password updated successfully")
+
+        return {
+            "message": "Password changed successfully"
+        }
+
+    except Exception as e:
+
+        print("ERROR OCCURRED:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)   # IMPORTANT — real error show pannum
+        )

@@ -3,10 +3,12 @@ import { ThemeContext } from "../context/ThemeContext";
 import { useAuthStore } from "../store/authStore";
 import CreateTodo from "./CreateTodo";
 import TodoList from "./TodoList";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
 
   const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
@@ -40,11 +42,19 @@ export default function Dashboard() {
       <button onClick={handleLogout}>
         Logout
       </button>
-      </div>
+
+      {/* Change Password Button */}
+
+      <button onClick={() =>
+        navigate("/change-password")
+      }
+    >
+      change password
+    </button>
+    </div>
 
       {/* CONTENT */}
-      <div className="dashboard-grid"></div>
-
+      
       <CreateTodo onCreateTodoSuccess={reload} />
       <TodoList refresh={refresh} />
 
