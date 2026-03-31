@@ -2,30 +2,23 @@ from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
+
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import hashlib
-
+from jose import jwt 
+from jose.exceptions import JWTError
 from database import SessionLocal, engine
 from models import Base, User, Todo
 from schemas.UserSchema import UserCreate
 from schemas.TodoSchema import TodoCreate, TodoOut
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
-security = HTTPBearer()
-# =========================
-# CONFIG
-# =========================
-
-SECRET_KEY = "mysecretkey"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
 origins = [
     "http://localhost:5173",
+    
     "https://todo-task-fs.netlify.app"
 ]
 
@@ -37,9 +30,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================
-# DATABASE
-# =========================
+
+Base.metadata.create_all(bind=engine)
+security = HTTPBearer()
+
+SECRET_KEY = "mysecretkey"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
 
 def get_db():
     db = SessionLocal()
@@ -79,8 +77,7 @@ def create_token(user_id: int):
         algorithm=ALGORITHM
     )
 
-    return token
-
+    return token 
 # =========================
 # GET CURRENT USER (FIXED)
 # =========================
@@ -156,6 +153,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     token = create_token(new_user.id)
+   
 
     return {
         "message": "Signup successful",

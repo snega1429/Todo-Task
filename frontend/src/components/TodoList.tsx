@@ -50,11 +50,11 @@ export default function TodoList({ refresh }: any) {
   };
 
   return (
-    <div>
+    <div className="card">
       <h3>Todo List</h3>
 
       {todos.map((todo) => (
-        <div key={todo.id} style={{ border: "1px solid black", margin: "10px", padding: "10px" }}>
+        <div key={todo.id} className="todo-item">
           {editId === todo.id ? (
             <div>
               <input

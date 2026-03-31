@@ -33,7 +33,7 @@ export default function CreateTodo({ onCreateTodoSuccess }: any) {
 };
 
   return (
-    <div className="todo-list" >
+    <div className="card" >
       <h3>Create Todo</h3>
 
       <form onSubmit={handleCreate}>

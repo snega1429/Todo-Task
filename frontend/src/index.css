@@ -1,145 +1,158 @@
-/* ===== General App Background ===== */
+/* ===== BODY CENTER ===== */
 body {
   margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to bottom, #e6e6fa, #d8bfd8); /* Lavender gradient */
-  color: #333;
-  position: relative;
-  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+
+  background: linear-gradient(135deg, #1ec2d8, #0e6bd4);
+  overflow: hidden;
 }
 
-/* ===== Full-page React symbols background ===== */
+/* ===== LEFT SIDE LAPTOP (BIG DARK) ===== */
 body::before {
-  content: "⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ⚛️ ";
+  content: "💻";
   position: absolute;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 50%;
-  font-size: 3rem;
-  opacity: 0.05; /* dark for subtle effect */
-  transform: rotate(-25deg);
-  pointer-events: none; /* Symbols won’t block clicks */
-  white-space: pre-wrap;
+  font-size: 300px;   /* 🔥 BIG SIZE */
+  left: 5%;
+  top: 40%;
+  transform: translateY(-50%);
+  opacity: 0.08; /* dark subtle */
   z-index: 0;
+  pointer-events: none;
 }
 
-/* ===== App Container ===== */
+/* ===== RIGHT SIDE MOBILE ===== */
+body::after {
+  content: "📱 \A FULL STACK";
+  position: absolute;
+  font-size: 120px;
+  right: 1%;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: right;
+  opacity: 0.08; /* dark */
+  z-index: 0;
+  pointer-events: none;  
+}
+
+/* ===== BUBBLES ===== */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: float 10s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 🔴🟠 MANY BUBBLES (FULL PAGE COVER) */
+.b1 { width: 40px; height: 40px; background: red; top: 5%; left: 10%; }
+.b2 { width: 60px; height: 60px; background: orange; top: 15%; left: 30%; }
+.b3 { width: 30px; height: 30px; background: #ff3d00; top: 25%; left: 70%; }
+.b4 { width: 50px; height: 50px; background: #ff6b6b; top: 35%; left: 50%; }
+.b5 { width: 70px; height: 70px; background: orange; top: 45%; left: 20%; }
+.b6 { width: 40px; height: 40px; background: red; top: 55%; left: 80%; }
+.b7 { width: 60px; height: 60px; background: #ff4500; top: 65%; left: 60%; }
+.b8 { width: 30px; height: 30px; background: rgb(214, 141, 5); top: 75%; left: 40%; }
+.b9 { width: 50px; height: 50px; background: red; top: 85%; left: 15%; }
+.b10 { width: 35px; height: 35px; background: #ff6b00; top: 20%; left: 90%; }
+.b11 { width: 45px; height: 45px; background: orange; top: 60%; left: 5%; }
+.b12 { width: 55px; height: 55px; background: red; top: 80%; left: 75%; }
+
+
+/* floating animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ===== APP CONTAINER ===== */
 .app-container {
-  position: relative;
-  z-index: 1; /* Above symbols */
-  max-width: 500px;
-  margin: 2rem auto;
+  width: 100%;
+  max-width: 450px;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+
   padding: 2rem;
-  background: linear-gradient(145deg, #0f1b44, #01030f); /* Dark blue gradient */
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s, box-shadow 0.3s;
-  color: #fff;
+
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  color: rgb(8, 4, 4);
+  position: relative;
+  z-index: 10;
 }
 
-/* Hover effect on container */
-.app-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-}
-
-/* ===== Title Style ===== */
+/* ===== TITLE ===== */
 .app-title {
   text-align: center;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  margin-bottom: 2rem;
-  text-shadow: 0 3px 0 #0d1b5a; /* Dark line below letters */
-  color: #dbd1d1;
+  margin-bottom: 1.5rem;
 }
 
-/* ===== Auth Section (Login + Signup) ===== */
-.auth-section {
+/* ===== FORM ===== */
+.auth-box form {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 18px;
 }
 
-/* Individual auth boxes */
-.auth-section > div {
-  flex: 1;
-  background-color: #934bc4;
-  padding: 1.5rem;
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(219, 16, 16, 0.15);
-  font-family: "Arial", sans-serif;
-  transition: transform 0.3s, box-shadow 0.3s;
-  color: #333;
-}
-
-/* Hover effect on auth boxes */
-.auth-section > div:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-}
-
-/* ===== Buttons ===== */
-button {
-  background-color: #200533;
-  color: rgb(144, 235, 59);
+/* ===== INPUT ===== */
+input {
+  padding: 14px;
+  border-radius: 10px;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 12px;
-  cursor: pointer;
+  font-size: 16px;
+
+  background: rgba(255,255,255,0.15);
+  color: rgb(17, 11, 11);
+}
+
+/* ===== BUTTON ===== */
+button {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+
+  background: linear-gradient(45deg, rgb(211, 10, 104), rgb(189, 12, 86));
+  color: rgb(17, 9, 9);
   font-weight: bold;
-  margin-top: 1rem;
-  transition: background 0.3s, transform 0.2s;
+
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
-  background-color: #6a0dad;
   transform: scale(1.05);
 }
 
-/* ===== Inputs ===== */
-input {
-  width: 100%;
-  padding: 0.5rem 0.8rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  border: 1px solid #2abe68;
-  outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-input:focus {
-  border-color: #4b0082;
-  box-shadow: 0 0 5px rgba(75, 0, 130, 0.5);
-}
-
-/* ===== Todo List ===== */
-.todo-list {
-  background-color: #be1285;
-  padding: 1.5rem;
+/* ===== CARD ===== */
+.card {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  margin-top: 15px;
   border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(172, 233, 31, 0.925);
-  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-/* Hover effect on Todo List */
-.todo-list:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(231, 24, 121, 0.2);
+/* ===== TODO ITEM ===== */
+.todo-item {
+  background: rgba(255,255,255,0.15);
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
 }
 
-/* Premium diamond bullets */
-.todo-item::before {
-  content: "💎 ";
+/* ===== ERROR ===== */
+.error {
+  color: #ff4d6d;
+  text-align: center;
 }
 
-/* Todo item hover effect */
-.todo-item:hover {
-  color: #1e90ff;
-  cursor: pointer;
-  transform: scale(1.02);
-  transition: transform 0.2s, color 0.2s;
+.form-container {
+  position: relative;
+  z-index: 10; /* Make sure form is on top */
 }

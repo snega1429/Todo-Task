@@ -25,7 +25,10 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div className="dashboard">
+
+      {/* HEADER */}
+      <div className="dashboard-header">
       <h1>Dashboard Page</h1>
 
       <p>Current theme: {theme}</p>
@@ -37,6 +40,10 @@ export default function Dashboard() {
       <button onClick={handleLogout}>
         Logout
       </button>
+      </div>
+
+      {/* CONTENT */}
+      <div className="dashboard-grid"></div>
 
       <CreateTodo onCreateTodoSuccess={reload} />
       <TodoList refresh={refresh} />

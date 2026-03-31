@@ -17,7 +17,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // ✅ must be first
+    e.preventDefault(); //  must be first
 
     try {
       const res = await API.post<LoginResponse>(
@@ -28,13 +28,13 @@ export default function Login() {
         }
       );
 
-      // ✅ Save token
+      //  Save token
       login(res.data.token);
       localStorage.setItem("token", res.data.token);
 
       console.log("Token saved:", res.data.token);
 
-      // ✅ Redirect
+      //  Redirect
       navigate("/dashboard");
 
     } catch (err: any) {
@@ -46,7 +46,10 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="form-container">
+      <div className="auth-box"></div>
+
+
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
