@@ -7,13 +7,13 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env_path = os.path.join(BASE_DIR, ".env")
 
-APP_URL = os.getenv("APP_URL")
+DATABASE_URL= os.getenv("DATABASE_URL")
 
-if not APP_URL:
-    raise ValueError("APP_URL is not set!")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set!")
 
 engine = create_engine(
-    APP_URL,
+    DATABASE_URL,
     pool_pre_ping=True,
     pool_recycle=300
 )
