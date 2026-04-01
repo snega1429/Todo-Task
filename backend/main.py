@@ -21,7 +21,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     
-    "https://todo-task-fs.netlify.app"
+    "https://ui-todoapp-fullstack.netlify.app"
 ]
 
 app.add_middleware(
