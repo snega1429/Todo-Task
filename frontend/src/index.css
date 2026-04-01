@@ -8,19 +8,21 @@ body {
   align-items: center;
   min-height: 100vh;
 
-  background: linear-gradient(135deg, #84ade2, #0e6bd4);
+  /* HIGH CONTRAST PROFESSIONAL THEME */
+  background: linear-gradient(135deg, #0c0c0f, #050a18);
   overflow: hidden;
+  color: #110f0f;
 }
 
 /* ===== LEFT SIDE LAPTOP (BIG DARK) ===== */
 body::before {
   content: "💻";
   position: absolute;
-  font-size: 300px;   /* 🔥 BIG SIZE */
+  font-size: 300px;
   left: 5%;
   top: 40%;
   transform: translateY(-50%);
-  opacity: 0.08; /* dark subtle */
+  opacity: 0.08;
   z-index: 0;
   pointer-events: none;
 }
@@ -34,37 +36,35 @@ body::after {
   top: 50%;
   transform: translateY(-50%);
   text-align: right;
-  opacity: 0.08; /* dark */
+  opacity: 0.08;
   z-index: 0;
-  pointer-events: none;  
+  pointer-events: none;
 }
 
 /* ===== BUBBLES ===== */
 .bubble {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.4;
+  opacity: 0.5;
   animation: float 10s infinite ease-in-out;
   pointer-events: none;
   z-index: 1;
 }
 
-/* 🔴🟠 MANY BUBBLES (FULL PAGE COVER) */
-.b1 { width: 40px; height: 40px; background: red; top: 5%; left: 10%; }
-.b2 { width: 60px; height: 60px; background: orange; top: 15%; left: 30%; }
-.b3 { width: 30px; height: 30px; background: #ff3d00; top: 25%; left: 70%; }
-.b4 { width: 50px; height: 50px; background: #ff6b6b; top: 35%; left: 50%; }
-.b5 { width: 70px; height: 70px; background: orange; top: 45%; left: 20%; }
-.b6 { width: 40px; height: 40px; background: red; top: 55%; left: 80%; }
-.b7 { width: 60px; height: 60px; background: #ff4500; top: 65%; left: 60%; }
-.b8 { width: 30px; height: 30px; background: rgb(214, 141, 5); top: 75%; left: 40%; }
-.b9 { width: 50px; height: 50px; background: red; top: 85%; left: 15%; }
-.b10 { width: 35px; height: 35px; background: #ff6b00; top: 20%; left: 90%; }
-.b11 { width: 45px; height: 45px; background: orange; top: 60%; left: 5%; }
-.b12 { width: 55px; height: 55px; background: red; top: 80%; left: 75%; }
+/* CONTRAST BUBBLES */
+.b1 { width: 40px; height: 40px; background: #ff4757; top: 5%; left: 10%; }
+.b2 { width: 60px; height: 60px; background: #ffa502; top: 15%; left: 30%; }
+.b3 { width: 30px; height: 30px; background: #ff6b81; top: 25%; left: 70%; }
+.b4 { width: 50px; height: 50px; background: #ff7f50; top: 35%; left: 50%; }
+.b5 { width: 70px; height: 70px; background: #ffa502; top: 45%; left: 20%; }
+.b6 { width: 40px; height: 40px; background: #ff4757; top: 55%; left: 80%; }
+.b7 { width: 60px; height: 60px; background: #ff6348; top: 65%; left: 60%; }
+.b8 { width: 30px; height: 30px; background: #eccc68; top: 75%; left: 40%; }
+.b9 { width: 50px; height: 50px; background: #ff4757; top: 85%; left: 15%; }
+.b10 { width: 35px; height: 35px; background: #ff7f50; top: 20%; left: 90%; }
+.b11 { width: 45px; height: 45px; background: #ffa502; top: 60%; left: 5%; }
+.b12 { width: 55px; height: 55px; background: #ff4757; top: 80%; left: 75%; }
 
-
-/* floating animation */
 @keyframes float {
   0% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -76,14 +76,14 @@ body::after {
   width: 100%;
   max-width: 450px;
 
-  background: rgba(255,255,255,0.08);
+  background: rgba(145, 148, 182, 0.89);
   backdrop-filter: blur(20px);
 
   padding: 2rem;
   border-radius: 20px;
 
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-  color: rgb(8, 4, 4);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  color: #060805;
   position: relative;
   z-index: 10;
 }
@@ -92,6 +92,8 @@ body::after {
 .app-title {
   text-align: center;
   margin-bottom: 1.5rem;
+  color: #121310;
+  font-weight: 600;
 }
 
 /* ===== FORM ===== */
@@ -105,11 +107,15 @@ body::after {
 input {
   padding: 14px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid rgba(71, 216, 13, 0.3);
   font-size: 16px;
 
-  background: rgba(255,255,255,0.15);
-  color: rgb(17, 11, 11);
+  background: rgba(0,0,0,0.4);
+  color: #181d14;
+}
+
+input::placeholder {
+  color: #131811;
 }
 
 /* ===== BUTTON ===== */
@@ -118,8 +124,9 @@ button {
   border-radius: 10px;
   border: none;
 
-  background: linear-gradient(45deg, rgb(211, 10, 104), rgb(189, 12, 86));
-  color: rgb(17, 9, 9);
+  /* HIGH CONTRAST BUTTON */
+  background: linear-gradient(45deg, #7cd813, #1e201b);
+  color: #140e0e;
   font-weight: bold;
 
   cursor: pointer;
@@ -128,11 +135,12 @@ button {
 
 button:hover {
   transform: scale(1.05);
+  background: linear-gradient(45deg, #131b10, #151b14);
 }
 
 /* ===== CARD ===== */
 .card {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
   padding: 15px;
   margin-top: 15px;
   border-radius: 15px;
@@ -140,7 +148,7 @@ button:hover {
 
 /* ===== TODO ITEM ===== */
 .todo-item {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.2);
   padding: 10px;
   margin-top: 10px;
   border-radius: 10px;
@@ -150,9 +158,10 @@ button:hover {
 .error {
   color: #ff4d6d;
   text-align: center;
+  font-weight: bold;
 }
 
 .form-container {
   position: relative;
-  z-index: 10; /* Make sure form is on top */
+  z-index: 10;
 }

@@ -18,8 +18,9 @@ export default function Dashboard() {
 
   const themeCtx = useContext(ThemeContext);
   if (!themeCtx) return null;
-   const { theme, toggleTheme } = themeCtx;
-   const [refresh, setRefresh] = useState(false);
+
+  const { theme, toggleTheme } = themeCtx;
+  const [refresh, setRefresh] = useState(false);
 
   const reload = () => {
     setRefresh(!refresh);
@@ -31,7 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await API.get("/profile"); // backend GET /profile
+        const res = await API.get("/profile");
         setEmail(res.data.email);
       } catch (err) {
         console.log("Fetch profile error", err);
@@ -43,62 +44,76 @@ export default function Dashboard() {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await API.put("/profile", { email }); // backend PUT /profile
+      await API.put("/profile", { email });
       setProfileMessage("Profile updated successfully!");
     } catch (err: any) {
       setProfileMessage(
-        typeof err.response?.data?.detaail === "string"
-        ? err.response?.data.detail 
-        :"Error updating profile"
+        typeof err.response?.data?.detail === "string"
+          ? err.response?.data.detail
+          : "Error updating profile"
       );
     }
   };
-return (
-    <div className="dashboard" >
+
+  return (
+    <div className="dashboard">
 
       {/* HEADER */}
       <div className="dashboard-header">
+
         <h1>Dashboard Page</h1>
-      <p>Current theme: {theme}</p>
+        <p>Current theme: {theme}</p>
 
-      <button onClick={toggleTheme}>
-        Toggle Theme
-      </button>
-     
-      <button onClick={handleLogout}>
-        Logout
-      </button>
+        {/* BUTTON GROUP WITH SPACE */}
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "15px",
+          marginTop: "10px",
+          flexWrap: "wrap"
+        }}>
 
-      {/* Change Password Button */}
+          <button onClick={toggleTheme}>
+            Toggle Theme
+          </button>
 
-      <button onClick={() =>
-        navigate("/change-password")
-      }
-    >
-      change password
-    </button>
-    </div>
+          <button onClick={handleLogout}>
+            Logout
+          </button>
 
-    {/* PROFILE UPDATE */}
-    <div className="form-container">
-      <h2>Update Profile</h2>
-      <form onSubmit={handleProfileUpdate}>
-        <input 
-        type="email"
-        placeholder="Enter new email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <br /><br />
-      <button type="submit">Update</button>
-    </form>
-     {profileMessage && <p>{profileMessage}</p>}
+          <button onClick={() => navigate("/change-password")}>
+            Change Password
+          </button>
 
-    </div>
+        </div>
+
+      </div>
+
+      {/* PROFILE UPDATE */}
+      <div className="form-container">
+        <h2>Update Profile</h2>
+
+        <form onSubmit={handleProfileUpdate}>
+          <input
+            type="email"
+            placeholder="Enter new email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <br /><br />
+
+          <button type="submit">
+            Update
+          </button>
+        </form>
+
+        {profileMessage && <p>{profileMessage}</p>}
+
+      </div>
 
       {/* TODO SECTION */}
-      
       <CreateTodo onCreateTodoSuccess={reload} />
       <TodoList refresh={refresh} />
 
