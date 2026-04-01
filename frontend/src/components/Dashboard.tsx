@@ -47,7 +47,9 @@ export default function Dashboard() {
       setProfileMessage("Profile updated successfully!");
     } catch (err: any) {
       setProfileMessage(
-        err.response?.data.detail || "Error updating profile"
+        typeof err.response?.data?.detaail === "string"
+        ? err.response?.data.detail 
+        :"Error updating profile"
       );
     }
   };

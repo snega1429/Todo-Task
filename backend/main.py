@@ -346,7 +346,7 @@ def get_profile(current_user: User = Depends(get_current_user)):
         
 @app.put("/profile")
 def update_profile(
-    data:UserCreate,
+    data: UserProfileUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -370,7 +370,7 @@ def update_profile(
         return {"message": "Profile updated successfully"}
 
     except Exception as e:
-        print("ERROR OCCURRED:", e)
+        print("ERROR:", e)
         raise HTTPException(
             status_code=500,
             detail=str(e)
