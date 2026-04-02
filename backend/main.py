@@ -15,6 +15,7 @@ from schemas.TodoSchema import TodoCreate, TodoOut
 from fastapi.responses import JSONResponse
 from schemas.UserSchema import UserCreate, ChangePassword
 from schemas.UserSchema import UserCreate, UserProfileUpdate
+from schemas.UserSchema import LoginRequest
 
 app = FastAPI()
 
@@ -168,10 +169,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
 # =========================
 # LOGIN
-# =========================
-
 @app.post("/login")
-def login(user: UserCreate, db: Session = Depends(get_db)):
+def login(user: LoginRequest, db: Session = Depends(get_db)):
 
     db_user = db.query(User).filter(
         User.email == user.email

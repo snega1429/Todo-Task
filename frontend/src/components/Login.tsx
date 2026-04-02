@@ -13,7 +13,6 @@ interface LoginResponse {
 }
 
 export default function Login() {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notifMessage, setNotifMessage] = useState("");
@@ -42,8 +41,9 @@ export default function Login() {
       setNotifType("success");
       navigate("/dashboard");
     } catch (err: any) {
-      const error = err as AxiosError<{ detail?: string }>;
-      setNotifMessage(error.response?.data.detail || "Login failed");
+      const error = err as AxiosError<any>;
+      const message = error.response?.data.detail?.[0]?.msg || "Login failed";
+      setNotifMessage(message);
       setNotifType("error");
     }
   };
@@ -54,10 +54,6 @@ export default function Login() {
       <div className="form-container">
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
-          <input
-            type="username" value={username} placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)} required
-          />
           <input
             type="email" value={email} placeholder="Email"
             onChange={(e) => setEmail(e.target.value)} required

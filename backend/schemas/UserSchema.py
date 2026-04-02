@@ -13,4 +13,8 @@ class ChangePassword(BaseModel):
 class UserProfileUpdate(BaseModel):
     username: str = Field(..., min_length=3)
     email: EmailStr
+    
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
