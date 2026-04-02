@@ -2,7 +2,10 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL:
-  "https://todo-task-4eka.onrender.com"
+  "https://todo-task-4eka.onrender.com",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 
@@ -15,8 +18,12 @@ API.interceptors.request.use((config) => {
     config.headers.Authorization =
       `Bearer ${token}`;
   }
-
   return config;
-});
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default API;
+  

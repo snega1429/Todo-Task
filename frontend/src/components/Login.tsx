@@ -30,7 +30,13 @@ export default function Login() {
     }
 
     try {
-      const res = await API.post<LoginResponse>("/login", { email, password });
+      const res = await API.post<LoginResponse>(
+        "/login", 
+        { 
+          email: email.trim(). toLowerCase(), 
+          password: password.trim() 
+        }
+      );
       login(res.data.token);
       localStorage.setItem("token", res.data.token);
       if (res.data.username) {
@@ -40,12 +46,32 @@ export default function Login() {
       setNotifMessage("Login successful!");
       setNotifType("success");
       navigate("/dashboard");
-    } catch (err: any) {
+    } catch (err: unknown) {
       const error = err as AxiosError<any>;
-      const message = error.response?.data.detail?.[0]?.msg || "Login failed";
-      setNotifMessage(message);
-      setNotifType("error");
-    }
+      console.log(
+        "ERROR RESPONSE:",
+      JSON.stringify(
+        error.response?.data,
+        null,
+        2
+    )
+  );
+
+  if (Array.isArray(error.response?.data?.detail)) {
+    setNotifMessage(
+      error.response?.data?.detail[0]?.msg
+    );
+  } else {
+    setNotifMessage(
+      error.response?.data?.detail ||
+      "Login failed"
+    );
+  }
+
+  setNotifType("error");
+}
+      
+    
   };
 
   return (
