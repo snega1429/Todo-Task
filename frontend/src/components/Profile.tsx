@@ -1,80 +1,153 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import API from "../api/api";
-import { useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 
-export default function ChangePassword() {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+export default function Profile() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+
   const [message, setMessage] = useState("");
+  const [type, setType] = useState<
+    "success" | "error" | "info" >("info");
 
-  const navigate = useNavigate();
+  // =========================
+  // LOAD PROFILE
+  // =========================
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await API.get("/profile");
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+        setUsername(res.data.username);
+        setEmail(res.data.email);
+
+      } catch (err: any) {
+        console.log(
+          "PROFILE LOAD ERROR:",
+          JSON.stringify(
+            err.response?.data,
+            null,
+            2
+          )
+        );
+
+        setMessage("Failed to load profile");
+        setType("error");
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // =========================
+  // UPDATE PROFILE
+  // =========================
+  const handleUpdate = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
-    if(newPassword.length < 6) {
-      setMessage("New password must be at least 6 characters");
+    if (username.trim().length < 3) {
+      setMessage(
+        "Username must be at least 3 characters"
+      );
+      setType("error");
       return;
     }
 
     try {
-      const token = localStorage.getItem("token"); // JWT token
+      await API.put("/profile", {
+        username: username.trim(),
+        email: email.trim().toLowerCase(),
+      });
 
-      await API.put(
-        "/change-password",
-        {
-          old_password: oldPassword,
-          new_password: newPassword
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-        }
+      setMessage(
+        "Profile updated successfully"
       );
-
-      setMessage("Password changed successfully");
-
-      // Redirect to dashboard after 1.5s
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      setType("success");
 
     } catch (err: any) {
-        setMessage(err.response?.data.detail || "Error changing password");
+      console.log(
+        "PROFILE UPDATE ERROR:",
+        JSON.stringify(
+          err.response?.data,
+          null,
+          2
+        )
+      );
+
+      if (
+        Array.isArray(
+          err.response?.data?.detail
+        )
+      ) {
+        setMessage(
+          err.response?.data?.detail[0]?.msg
+        );
+      } else {
+        setMessage(
+          err.response?.data?.detail ||
+          "Update failed"
+        );
+      }
+
+      setType("error");
     }
   };
 
   return (
     <>
-    <Logo size={115}/>
-    <div className="form-container">
-      <h2>Change Password</h2>
-      <form onSubmit={handleChangePassword}>
-        <input
-          type="password"
-          placeholder="Old Password"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          required
-        />
-        <br /><br />
-        <input
-          type="password"
-          placeholder="New Password (min 6 characters)"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
-        <br /><br />
-        <button type="submit">Change Password</button>
-        {message && <p>{message}</p>}
-      </form>
-    </div>
-  </>
+      <Logo size={115} />
+
+      <div className="form-container">
+        <h2>Profile</h2>
+
+        <form onSubmit={handleUpdate}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) =>
+              setUsername(e.target.value)
+            }
+            required
+          />
+
+          <br />
+          <br />
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            required
+          />
+
+          <br />
+          <br />
+
+          <button type="submit">
+            Update Profile
+          </button>
+
+          {message && (
+            <p
+              style={{
+                marginTop: "10px",
+                color:
+                  type === "success"
+                    ? "green"
+                    : "red",
+              }}
+            >
+              {message}
+            </p>
+          )}
+        </form>
+      </div>
+    </>
   );
 }
-
-
-  
