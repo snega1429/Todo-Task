@@ -5,8 +5,9 @@ import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
 import { PrivateRoute } from "./routes/PrivateRoutes";
 import { Navigate } from "react-router-dom";
-import ChangePassword from "../src/components/ChangePassword";
+import ChangePassword from "./components/ChangePassword";
 import Profile from "../src/components/Profile";
+
 import "./index.css";
 
 function App() {
@@ -62,7 +63,7 @@ function App() {
               </PrivateRoute>
             }
           />
-        </Routes>
+          </Routes>
         </div>
         
       </Router>

@@ -2,85 +2,65 @@ import { useState } from "react";
 import API from "../api/api";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
+import Logo from "./Logo";
+import Notification from "./Notification";
 
 export default function Signup() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-
+  const [notifMessage, setNotifMessage] = useState("");
+  const [notifType, setNotifType] = useState<"success"|"error"|"info">("info");
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setNotifMessage("Password must be at least 6 characters");
+      setNotifType("error");
+      return;
+    }
 
     try {
-      await API.post("/signup", {
-        email,
-        password,
-      });
-
-      // Show success message
-      setMessage("Signup successful! Please login.");
-
-      // Redirect to login page after 1 second
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
-
+      await API.post("/signup", { username, email, password });
+      setNotifMessage("Signup successful! Please login.");
+      setNotifType("success");
+      setTimeout(() => navigate("/login"), 1000);
     } catch (err: unknown) {
       const error = err as AxiosError<{ detail?: string }>;
-      setMessage(
-        error.response?.data.detail || "Signup failed"
-      );
+      if (Array.isArray(error.response?.data?.detail)) {
+        setNotifMessage(error.response?.data?.detail[0]?.msg || "Signup failed");
+      } else {
+        setNotifMessage(error.response?.data.detail || "Signup failed");
+      }
+      setNotifType("error");
     }
   };
 
   return (
-    <div className="form-container">
-      <div className="auth-box">
-
+    <>
+      <Logo size={115}/>
+      <div className="form-container">
         <h2>Signup</h2>
-
         <form onSubmit={handleSignup}>
-
-          <input
-            type="email"
-            value={email}
-            placeholder="Email"
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            required
-          />
-
-          <input
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            required
-          />
-
-          <br /><br />
-
-          <button type="submit">
-            Signup
-          </button>
-
-          {message && <p>{message}</p>}
-
+          <input type="text" value={username} placeholder="Username"
+            onChange={(e) => setUsername(e.target.value)} required />
+          <input type="email" value={email} placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" value={password}
+            placeholder="Password (min 6 characters)" minLength={6}
+            onChange={(e) => setPassword(e.target.value)} required />
+          <button type="submit">Signup</button>
+          <p>Already have an account? <Link to="/login">Login</Link></p>
         </form>
 
-        <p>
-          Already have an account?{" "}
-          <Link to="/login">
-            Login
-          </Link>
-        </p>
-
+        {notifMessage && (
+          <Notification
+            message={notifMessage} type={notifType}
+            onClose={() => setNotifMessage("")}
+          />
+        )}
       </div>
-    </div>
+    </>
   );
 }

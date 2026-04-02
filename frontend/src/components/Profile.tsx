@@ -1,54 +1,80 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
+import Logo from "../components/Logo";
 
-export default function Profile() {
-  const [email, setEmail] = useState("");
+export default function ChangePassword() {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
+
   const navigate = useNavigate();
 
-  // OPTIONAL: Load current user email if you have GET /profile
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await API.get("/profile"); // Optional
-        setEmail(res.data.email);
-      } catch (err) {
-        console.log("Fetch profile error", err);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await API.put("/profile", { email });
-      setMessage("Profile updated successfully!");
 
-      // Redirect after 1.5s
-      setTimeout(() => navigate("/dashboard"), 1500);
+    if(newPassword.length < 6) {
+      setMessage("New password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token"); // JWT token
+
+      await API.put(
+        "/change-password",
+        {
+          old_password: oldPassword,
+          new_password: newPassword
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+
+      setMessage("Password changed successfully");
+
+      // Redirect to dashboard after 1.5s
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
 
     } catch (err: any) {
-      setMessage(err.response?.data.detail || "Error updating profile");
+        setMessage(err.response?.data.detail || "Error changing password");
     }
   };
 
   return (
+    <>
+    <Logo size={115}/>
     <div className="form-container">
-      <h2>Update Profile</h2>
-      <form onSubmit={handleUpdate}>
+      <h2>Change Password</h2>
+      <form onSubmit={handleChangePassword}>
         <input
-          type="email"
-          placeholder="Enter new email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="password"
+          placeholder="Old Password"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
           required
         />
         <br /><br />
-        <button type="submit">Update</button>
+        <input
+          type="password"
+          placeholder="New Password (min 6 characters)"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+        />
+        <br /><br />
+        <button type="submit">Change Password</button>
+        {message && <p>{message}</p>}
       </form>
-      {message && <p>{message}</p>}
     </div>
+  </>
   );
 }
+
+
+  

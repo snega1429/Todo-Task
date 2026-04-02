@@ -48,52 +48,94 @@ export default function TodoList({ refresh }: any) {
       console.log("Error updating todo", err);
     }
   };
+return (
+    <div className="card">
 
-  return (
-    <div className="card">
-      <h3>Todo List</h3>
+      <h3>Todo List</h3>
 
-      {todos.map((todo) => (
-        <div key={todo.id} className="todo-item">
-          {editId === todo.id ? (
-            <div>
-              <input
-                  id="title"
-                  name="title"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-              />
+      {/* SCROLL CONTAINER */}
+      <div className="todo-list">
+        <div className="todo-text">
+        </ div>
+      </div>
+        {todos.length === 0 ? (
+          <p>No todos yet</p>
+        ) : (
+          todos.map((todo) => (
 
-              <input
-                  id="category"
-                  name="category"
-                  placeholder="Category"
-                  value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
+            <div key={todo.id} className="todo-item">
 
-              <input
-                  id="due_date"
-                  name="due_date"
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-              />
+              {editId === todo.id ? (
 
-              <button onClick={() => handleUpdate(todo.id)}>Update</button>
-              <button onClick={() => setEditId(null)}>Cancel</button>
-            </div>
-          ) : (
-            <div>
-              <strong>{todo.title}</strong> | {todo.category} | {todo.due_date}
-              <br />
-              <button onClick={() => handleEdit(todo)}>Edit</button>
-              <button onClick={() => handleDelete(todo.id)}>Delete</button>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+                <div>
+
+                  <input
+                    id="title"
+                    name="title"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+
+                  <input
+                    id="category"
+                    name="category"
+                    placeholder="Category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+
+                  <input
+                    id="due_date"
+                    name="due_date"
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+
+                  <br /><br />
+
+                  <button onClick={() => handleUpdate(todo.id)}>
+                    Update
+                  </button>
+
+                  <button onClick={() => setEditId(null)}>
+                    Cancel
+                  </button>
+
+                </div>
+
+              ) : (
+
+                <div>
+
+                  <strong>{todo.title}</strong>
+                  {" | "}
+                  {todo.category}
+                  {" | "}
+                  {todo.due_date}
+
+                  <br />
+
+                  <button onClick={() => handleEdit(todo)}>
+                    Edit
+                  </button>
+
+                  <button onClick={() => handleDelete(todo.id)}>
+                    Delete
+                  </button>
+
+                </div>
+
+              )}
+
+            </div>
+
+          ))
+        )}
+
+      </div>
+    );
 }
+
+  

@@ -142,10 +142,14 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
             status_code=400,
             detail="Email already registered"
         )
-
+        
+    existing_username = db.query(User).filter(User.username == user.username).first()
+    if existing_username:
+        raise HTTPException(status_code=400, detail="Username already taken")
     hashed = hash_password(user.password)
 
     new_user = User(
+        username=user.username,
         email=user.email,
         password=hashed
     )
@@ -192,7 +196,8 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
 
     return {
         "message": "Login successful",
-        "token": token
+        "token": token,
+        "username": db_user.username
     }
 
 # =========================
@@ -342,7 +347,11 @@ def change_password(
         
 @app.get("/profile")
 def get_profile(current_user: User = Depends(get_current_user)):
-    return {"email": current_user.email}
+    return {
+        "username": current_user.username,
+        "email": current_user.email
+    }
+        
         
 @app.put("/profile")
 def update_profile(
@@ -362,8 +371,21 @@ def update_profile(
                 detail="Email already in use"
             )
 
-        # Update current user's email
+        # Check if username already used
+        existing_username = db.query(User).filter(
+            User.username == data.username,
+            User.id != current_user.id
+        ).first()
+        if existing_username:
+            raise HTTPException(
+                status_code=400,
+                detail="Username already in use"
+            )
+
+        # Update current user's email and username
         current_user.email = data.email
+        current_user.username = data.username
+
         db.commit()
         db.refresh(current_user)
 
@@ -371,11 +393,7 @@ def update_profile(
 
     except Exception as e:
         print("ERROR:", e)
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
-        
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/me")
 def get_current_user_profile(current_user: User = Depends(get_current_user)):

@@ -5,6 +5,7 @@ import CreateTodo from "./CreateTodo";
 import TodoList from "./TodoList";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
+import Logo from "../components/Logo";
 
 export default function Dashboard() {
 
@@ -56,8 +57,9 @@ export default function Dashboard() {
   };
 
   return (
+  <>
+    <Logo size={200} />
     <div className="dashboard">
-
       {/* HEADER */}
       <div className="dashboard-header">
 
@@ -118,5 +120,6 @@ export default function Dashboard() {
       <TodoList refresh={refresh} />
 
     </div>
+  </>
   );
 }

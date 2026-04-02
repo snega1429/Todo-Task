@@ -1,47 +1,41 @@
-/* ===== BODY CENTER ===== */
+/* ===== BODY ===== */
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-
-  /* HIGH CONTRAST PROFESSIONAL THEME */
   background: linear-gradient(135deg, #0c0c0f, #050a18);
-  overflow: hidden;
-  color: #110f0f;
+  overflow: auto;
+  color: #e0d3d3;
+  position: relative;
 }
 
-/* ===== LEFT SIDE LAPTOP (BIG DARK) ===== */
-body::before {
-  content: "💻";
-  position: absolute;
-  font-size: 300px;
-  left: 5%;
-  top: 40%;
-  transform: translateY(-50%);
-  opacity: 0.08;
-  z-index: 0;
-  pointer-events: none;
+/* ===== BACKGROUND BUBBLES ===== */
+body::before { content: "💻"; 
+position: absolute; 
+font-size: 300px; 
+left: 5%; 
+top: 40%; 
+transform: translateY(-50%); 
+opacity: 0.08; 
+z-index: 0; 
+pointer-events: none;}
+
+body::after { content: "📱 FULL STACK"; 
+position: absolute; 
+font-size: 120px; 
+right: 1%; 
+top: 50%; 
+transform: translateY(-50%); 
+text-align: right; 
+opacity: 0.08; 
+z-index: 0; 
+pointer-events: none;
 }
 
-/* ===== RIGHT SIDE MOBILE ===== */
-body::after {
-  content: "📱 \A FULL STACK";
-  position: absolute;
-  font-size: 120px;
-  right: 1%;
-  top: 50%;
-  transform: translateY(-50%);
-  text-align: right;
-  opacity: 0.08;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* ===== BUBBLES ===== */
+/* ===== FLOATING BUBBLES ===== */
 .bubble {
   position: absolute;
   border-radius: 50%;
@@ -65,86 +59,101 @@ body::after {
 .b11 { width: 45px; height: 45px; background: #ffa502; top: 60%; left: 5%; }
 .b12 { width: 55px; height: 55px; background: #ff4757; top: 80%; left: 75%; }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+@keyframes float { 
+0% { transform: translateY(0px); } 
+50% { transform: translateY(-20px); } 
+100% { transform: translateY(0px); } 
 }
 
 /* ===== APP CONTAINER ===== */
 .app-container {
   width: 100%;
   max-width: 450px;
-
   background: rgba(145, 148, 182, 0.89);
   backdrop-filter: blur(20px);
-
   padding: 2rem;
   border-radius: 20px;
-
   box-shadow: 0 20px 50px rgba(0,0,0,0.8);
   color: #060805;
   position: relative;
   z-index: 10;
 }
 
-/* ===== TITLE ===== */
-.app-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #121310;
-  font-weight: 600;
-}
-
 /* ===== FORM ===== */
-.auth-box form {
+.form-container form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 15px;
 }
 
-/* ===== INPUT ===== */
 input {
   padding: 14px;
   border-radius: 10px;
   border: 1px solid rgba(71, 216, 13, 0.3);
   font-size: 16px;
-
-  background: rgba(0,0,0,0.4);
-  color: #181d14;
+  background: rgba(228, 197, 197, 0.4);
+  color: #090a08;
 }
 
-input::placeholder {
-  color: #131811;
-}
+input::placeholder { color: #131811; }
 
 /* ===== BUTTON ===== */
 button {
   padding: 14px;
   border-radius: 10px;
   border: none;
-
-  /* HIGH CONTRAST BUTTON */
-  background: linear-gradient(45deg, #7cd813, #1e201b);
+  background: linear-gradient(45deg, #7cd813, #576d36);
   color: #140e0e;
   font-weight: bold;
-
   cursor: pointer;
   transition: 0.3s;
 }
-
-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(45deg, #131b10, #151b14);
-}
-
-/* ===== CARD ===== */
-.card {
-  background: rgba(255,255,255,0.15);
-  padding: 15px;
+button:hover { transform: scale(1.05); background: linear-gradient(45deg, #40ca0a, #31c018); }
+/* TODO BUTTON SPACE */
+.todo-item button {
+  margin-right: 25px;
   margin-top: 15px;
-  border-radius: 15px;
 }
+
+/* REMOVE SCROLLBAR LINE */
+
+/* Chrome, Edge, Safari */
+.dashboard::-webkit-scrollbar,
+.card::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Firefox */
+.dashboard,
+.card {
+  scrollbar-width: none;
+}
+
+/* Optional safety */
+.dashboard::-webkit-scrollbar-thumb,
+.card::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+
+/* ===== NOTIFICATION ===== */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: #cac5c5;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  z-index: 50;
+}
+.notification.show { opacity: 1; pointer-events: auto; }
+.notification.success { background-color: #226e2c; }
+.notification.error { background-color: #cc1515; }
+.notification.info { background-color: #cea10f; }
 
 /* ===== TODO ITEM ===== */
 .todo-item {
@@ -152,16 +161,27 @@ button:hover {
   padding: 10px;
   margin-top: 10px;
   border-radius: 10px;
+
+  display: flex;           /* horizontal layout */
+  justify-content: space-between; /* title on left, date on right */
+  align-items: center;
+  gap: 10px;
 }
 
-/* ===== ERROR ===== */
-.error {
-  color: #ff4d6d;
-  text-align: center;
-  font-weight: bold;
+/* Title + Category container */
+.todo-text {
+  display: flex;
+  flex-direction: column;  /* stack title above category */
 }
 
-.form-container {
-  position: relative;
-  z-index: 10;
+/* Example if you want category smaller */
+.todo-category {
+  font-size: 0.9rem;
+  color: #e0b5b5;
 }
+
+.todo-date {
+  font-size: 0.8rem;
+  color: #dd9797;
+}
+
