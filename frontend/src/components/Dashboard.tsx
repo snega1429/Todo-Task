@@ -26,7 +26,7 @@ export default function Dashboard() {
   const reload = () => {
     setRefresh(!refresh);
   };
-
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
 
@@ -34,7 +34,11 @@ export default function Dashboard() {
     const fetchProfile = async () => {
       try {
         const res = await API.get("/profile");
-        setEmail(res.data.email);
+        console.log("PROFILE DATA:", res.data);
+
+        setUsername(res.data.username || "");
+        setEmail(res.data.email || "");
+
       } catch (err) {
         console.log("Fetch profile error", err);
       }
@@ -44,10 +48,22 @@ export default function Dashboard() {
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("SENDING:", {
+      username,
+      email,
+    });
     try {
-      await API.put("/profile", { email });
+      await API.put("/profile", { 
+        username: username.trim(),
+        email: email.trim(), 
+      });
       setProfileMessage("Profile updated successfully!");
+
     } catch (err: any) {
+      console.log("PROFILE ERROR:", JSON.stringify(err.response?.data, null, 2)
+    );
+
       setProfileMessage(
         typeof err.response?.data?.detail === "string"
           ? err.response?.data.detail
@@ -96,6 +112,18 @@ export default function Dashboard() {
         <h2>Update Profile</h2>
 
         <form onSubmit={handleProfileUpdate}>
+
+          {/* NEW username field */}
+          <input
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
+          <br /><br />
+          
           <input
             type="email"
             placeholder="Enter new email"
